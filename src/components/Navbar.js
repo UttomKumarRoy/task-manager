@@ -12,7 +12,7 @@ const Navbar = () => {
     }
 
     const menuItems = <React.Fragment>
-        <li><Link to="/home">Home</Link></li>
+        <li><Link to="/">Home</Link></li>
         {user?.uid ?
             <>
                 <li><Link to="/addTask">Add Task</Link></li>

@@ -28,9 +28,9 @@ import {
   
     //   2. Update Name
   
-    const updateName = (name) => {
+    const updateName = (name, photo) => {
       setLoading(true)
-      return updateProfile(auth.currentUser, { displayName: name})
+      return updateProfile(auth.currentUser, { displayName: name, photoURL:photo})
     }
   
    
