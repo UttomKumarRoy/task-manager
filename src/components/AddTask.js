@@ -17,7 +17,7 @@ const AddTask = () => {
         }
         console.log(task);
         setLoading(true);
-       fetch('http://localhost:8000/addTask',{
+       fetch('https://task-manager-server-three.vercel.app/addTask',{
         method:"POST",
         headers: {
             'Content-Type': 'application/json'
