@@ -1,13 +1,19 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/UserContext';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const navigate=useNavigate()
 
     const handleLogOut = () => {
         logout()
-            .then(() => { })
+            .then(() => {
+                toast.success("Log Out Success")
+                navigate('/')
+
+             })
             .catch(err => console.log(err));
     }
 
@@ -18,7 +24,7 @@ const Navbar = () => {
                 <li><Link to="/addTask">Add Task</Link></li>
                 <li><Link to="/myTask">My Task</Link></li>
                 <li><Link to="/completedTask">Completed Task</Link></li>
-                <li><button onClick={handleLogOut}>Sign out</button></li>
+                <li><button onClick={handleLogOut}>Log out</button></li>
             </>
             : <li><Link to="/login">Login</Link></li>}
     </React.Fragment>
