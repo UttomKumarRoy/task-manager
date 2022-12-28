@@ -18,7 +18,7 @@ import {
     const googleProvider = new GoogleAuthProvider()
   
     const [user, setUser] = useState({})
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
   
     //1. Create User
     const createUser = (email, password) => {
@@ -79,6 +79,7 @@ import {
       logout,
       signIn,
       loading,
+      setLoading
     }
   
     return (

@@ -2,9 +2,7 @@ import React, { useContext } from 'react'
 import { toast } from 'react-hot-toast'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-//import { toast } from 'react-toastify'
 import { AuthContext } from '../contexts/UserContext'
-//import useTitle from './useTitle'
 
 const Register = () => {
   const navigate = useNavigate()
@@ -54,7 +52,6 @@ const Register = () => {
   }
 
   
-//useTitle('Register')
   return (
     <div className='text-center border-pink-900 rounded-md border-4 mt-7'>
       
