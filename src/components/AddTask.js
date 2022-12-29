@@ -44,7 +44,7 @@ const AddTask = () => {
         <Loading></Loading>
        }
     return (
-             <div className='text-center border-pink-900 rounded-md border-4 mt-7'>
+             <div className='text-center border-pink-900 rounded-md border-4 p-1 mt-7'>
       
                 <div>
                     <h4 className='bg-green-500 text-3xl p-2'>Add Task</h4>
@@ -56,7 +56,7 @@ const AddTask = () => {
                     </div>
                     
                     <div>
-                    <button className='border-black border-3 bg-red-400 p-1 hover:bg-green-500 rounded-md' type='submit' >Submit </button>
+                    <button className='border-black border-2 bg-red-400 p-1  hover:bg-slate-500 hover:text-white rounded-md' type='submit' >Submit </button>
                     </div>
                 </form>
         </div>

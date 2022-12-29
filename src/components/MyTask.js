@@ -107,8 +107,8 @@ const MyTask = () => {
        
     }
     return (
-        <div className='text-center'>
-        <h2 className="text-3xl">All Tasks</h2>
+        <div className='text-center border-pink-900 p-1 rounded-md border-4 mt-7'>
+        <h2 className="bg-green-500 text-3xl p-2">All Tasks</h2>
         <div className="overflow-x-auto">
             <table className="table w-full">
             <thead>
@@ -125,9 +125,9 @@ const MyTask = () => {
                 tasks.map((task, i) =><tr key={task._id}>
                     <th>{i+1}</th>
                     <td>{task?.taskTitle}</td>
-                    <td><button onClick={()=>handleCompletedTask(task)} className='btn btn-xs btn-danger'>Completed</button></td>
-                    <td><button  onClick={() => handleUpdateTask(task)} className='btn btn-xs btn-danger'>Update</button></td>
-                    <td><button onClick={()=>handleDeleteTask(task)} className='btn btn-xs btn-danger'>Delete</button></td>
+                    <td><button onClick={()=>handleCompletedTask(task)} className='border-black border-2 bg-red-400 p-1  hover:bg-slate-500 hover:text-white rounded-md'>Completed</button></td>
+                    <td><button  onClick={() => handleUpdateTask(task)} className='border-black border-2 bg-red-400 p-1  hover:bg-slate-500 hover:text-white rounded-md'>Update</button></td>
+                    <td><button onClick={()=>handleDeleteTask(task)} className='border-black border-2 bg-red-400 p-1  hover:bg-slate-500 hover:text-white rounded-md'>Delete</button></td>
                 </tr>)
             }
             
