@@ -2,15 +2,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/UserContext';
-import Loading from './Loading';
+//import Loading from './Loading';
 
 const CompletedTask = () => {
     const [showModal, setShowModal] = useState(false);
     const [task, setTask]=useState('')
     const [taskId, setTaskId]=useState()
+    const [reload, setReload]=useState(false)
+    const [loading, setLoading]=useState(false)
+
+
 
     const [tasks, setTasks]=useState([])
-    const {user, loading, setLoading}=useContext(AuthContext);
+    const {user, logout}=useContext(AuthContext);
     const status="completed";
     const navigate=useNavigate()
 
@@ -18,33 +22,48 @@ const CompletedTask = () => {
 
     useEffect(()=>{
         setLoading(true)
-        fetch(`https://task-manager-server-three.vercel.app/completedTask?email=${user?.email}&status=${status}`)
-        .then(res=> res.json())
+        fetch(`https://task-manager-server-three.vercel.app/completedTask?email=${user?.email}&status=${status}`, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(res=> { 
+            if (res.status === 401 || res.status === 403) {
+            return logout();
+        }
+        return res.json()}
+        )
         .then(data=>{
-            console.log(data);
             setTasks(data)
             setLoading(false)
+
         })
         .catch(err=>{
             console.log(err);
             setLoading(false)
+
         })
-    },[user?.email,setLoading,tasks])
-    if(loading){
-        console.log("Loading fetch");
-        <Loading></Loading>
-    }
+    },[user?.email,logout, reload])
+    
 
     const handleIncompleteTask=(task)=>{
         fetch(`https://task-manager-server-three.vercel.app/completedTask/${task._id}`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
         })
         .then(res => res.json())
         .then(data => {
             if(data.modifiedCount > 0){
+                setReload(!reload)
                 toast.success(`Task Not Completed successfully`)
             }
             navigate('/myTask')
+
+        })
+        .catch(err=>{
+            console.log(err);
 
         })
     }
@@ -53,13 +72,22 @@ const CompletedTask = () => {
 
     const handleDeleteTask=(task)=>{
         fetch(`https://task-manager-server-three.vercel.app/myTask/${task._id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
         })
         .then(res => res.json())
         .then(data => {
             if(data.deletedCount > 0){
+                setReload(!reload)
+
                 toast.success(`Task deleted successfully`)
             }
+        })
+        .catch(err=>{
+            console.log(err);
+
         })
     }
 
@@ -77,28 +105,35 @@ const CompletedTask = () => {
         const task={
             comment
         }
-        console.log(task);
-        setLoading(true);
        fetch(`https://task-manager-server-three.vercel.app/comment/${taskId}`,{
         method:"PUT",
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            authorization: `Bearer ${localStorage.getItem('token')}`
           },
           body: JSON.stringify(task)
        })
-       .then(res=>{
-        console.log(res);
-        setLoading(false)
-        toast.success("Comment added / updated successfully");
-        setShowModal(false);
+       .then(res=>res.json())
+       .then(data=>{
+        console.log(data);
+        if(data.modifiedCount>0){
+            setReload(!reload)
+
+            toast.success("Comment added / updated successfully");
+            setShowModal(false);
+        }
 
        })
        .catch(err=>{
-        console.log(err);
-        setLoading(false)
+        setReload(!reload)
+
         toast.success("Comment not added / updated")
        })
     }
+    if(loading){
+        return <div>Loading...</div>
+    }
+    
     return (
         <div className='text-center border-pink-900 p-1 rounded-md border-4 mt-7'>
         <h2 className="bg-green-500 text-3xl p-2">Completed Tasks</h2>

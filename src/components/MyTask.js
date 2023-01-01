@@ -2,52 +2,65 @@ import React, { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/UserContext';
-import Loading from './Loading';
+//import Loading from './Loading';
 
 const MyTask = () => {
     const [tasks, setTasks]=useState([])
     const [task, setTask]=useState('')
     const [taskId, setTaskId]=useState()
+    const [reload, setReload]=useState(false)
+    const [loading, setLoading]=useState(false)
 
 
     const [showModal, setShowModal] = useState(false);
-    const {user, loading, setLoading}=useContext(AuthContext);
+    const {user, logout}=useContext(AuthContext);
     const status="incomplete";
     const navigate=useNavigate()
 
     useEffect(()=>{
         setLoading(true)
-        fetch(`https://task-manager-server-three.vercel.app/myTask?email=${user?.email}&status=${status}`)
-        .then(res=> res.json())
+        fetch(`https://task-manager-server-three.vercel.app/myTask?email=${user?.email}&status=${status}`, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(res=> { 
+            if (res.status === 401 || res.status === 403) {
+            return logout();
+        }
+        return res.json()}
+        )
         .then(data=>{
-            console.log(data);
             setTasks(data)
             setLoading(false)
         })
         .catch(err=>{
             console.log(err);
             setLoading(false)
+
+
         })
-    },[user?.email,setLoading,tasks])
-    if(loading){
-        console.log("Loading fetch");
-        <Loading></Loading>
-    }
+    },[user?.email, logout, reload])
+    
 
     const handleCompletedTask=(task)=>{
         fetch(`https://task-manager-server-three.vercel.app/myTask/${task._id}`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
         })
         .then(res => res.json())
         .then(data => {
             if(data.modifiedCount > 0){
+                setReload(!reload)
                 toast.success(`Task completed successfully`)
             }
             navigate('/completedTask')
         })
         .catch(err=>{
             console.log(err);
-            setLoading(false)
+
         })
     }
 
@@ -60,17 +73,22 @@ const MyTask = () => {
 
     const handleDeleteTask=(task)=>{
         fetch(`https://task-manager-server-three.vercel.app/myTask/${task._id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`
+            }
         })
         .then(res => res.json())
         .then(data => {
             if(data.deletedCount > 0){
+                setReload(!reload)
+
                 toast.success(`Task deleted successfully`)
             }
         })
         .catch(err=>{
             console.log(err);
-            setLoading(false)
+
         })
     }
 
@@ -80,18 +98,18 @@ const MyTask = () => {
         const task={
             taskTitle
         }
-        console.log(task);
-        setLoading(true);
        fetch(`https://task-manager-server-three.vercel.app/myTaskModal/${taskId}`,{
         method:"PUT",
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            authorization: `Bearer ${localStorage.getItem('token')}`
           },
           body: JSON.stringify(task)
        })
        .then(res=>{
         console.log(res);
-        setLoading(false)
+        setReload(!reload)
+
         toast.success("Task updated successfully");
         setShowModal(false);
 
@@ -99,13 +117,17 @@ const MyTask = () => {
        })
        .catch(err=>{
         console.log(err);
-        setLoading(false)
+
         toast.success("Task not updated")
        })
-
-       
-       
+ 
     }
+
+    if(loading){
+        return <div>Loading...</div>
+    }
+    
+
     return (
         <div className='text-center border-pink-900 p-1 rounded-md border-4 mt-7'>
         <h2 className="bg-green-500 text-3xl p-2">All Tasks</h2>
@@ -122,7 +144,7 @@ const MyTask = () => {
             </thead>
             <tbody>
             {
-                tasks.map((task, i) =><tr key={task._id}>
+              tasks &&  tasks.map((task, i) =><tr key={task._id}>
                     <th>{i+1}</th>
                     <td>{task?.taskTitle}</td>
                     <td><button onClick={()=>handleCompletedTask(task)} className='border-black border-2 bg-red-400 p-1  hover:bg-slate-500 hover:text-white rounded-md'>Completed</button></td>
